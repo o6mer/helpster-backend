@@ -1,6 +1,7 @@
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const usersRoutes = require("./routes/userRoutes");
 require("dotenv").config();
 const express = require("express");
 const { onSocketConection } = require("./controllers/socketController");
@@ -37,7 +38,7 @@ io.on("connection", (socket: any) => onSocketConection(socket, io));
 const routerLand = express.Router();
 routerLand.get("/", (_req: any, _res: any, _next: any) => {});
 
-// app.use("/api/user", usersRoutes);
+app.use("/api/user", usersRoutes);
 
 mongoose
   .connect(process.env.DB_URL)
