@@ -12,9 +12,14 @@ const signup = async (req: any, res: any, next: any) => {
     return next();
   }
 
-  console.log(email, password, username);
-
   try {
+    if (User.findOne({ email, username })) {
+      res
+        .status(400)
+        .json({ message: "Can not create user, user already exists" });
+      return next();
+    }
+
     let newUser = new User({ email, password, username });
     newUser = await newUser.save();
     res.status(200).json({ ...newUser.toObject() });
