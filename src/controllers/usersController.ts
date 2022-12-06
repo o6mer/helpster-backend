@@ -1,7 +1,32 @@
 const { User } = require("../models/userModel");
+const bcrypt = require("bcryptjs");
 
-const login = (req: any, res: any) => {
-  console.log(req.body);
+const login = async (req: any, res: any, next: any) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(401).json({ message: "Can not login, invalid inputs" });
+    return next();
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      res
+        .status(401)
+        .json({ message: "Can not login, invalid email or password" });
+      return next();
+    }
+
+    if (!(await bcrypt.compare(password, user.password))) {
+      res
+        .status(401)
+        .json({ message: "Can not login, invalid email or password" });
+      return next();
+    }
+
+    res.status(200).json({ username: user.username, email: user.email });
+  } catch (err) {}
 };
 
 const signup = async (req: any, res: any, next: any) => {
@@ -13,18 +38,23 @@ const signup = async (req: any, res: any, next: any) => {
   }
 
   try {
-    if (User.findOne({ email, username })) {
+    const isUserExist = await User.findOne({
+      $or: [{ email }, { username }],
+    });
+
+    if (isUserExist) {
       res
         .status(400)
         .json({ message: "Can not create user, user already exists" });
       return next();
     }
-
-    let newUser = new User({ email, password, username });
+    const hashedPassword = await bcrypt.hash(password, 12);
+    let newUser = new User({ email, password: hashedPassword, username });
     newUser = await newUser.save();
-    res.status(200).json({ ...newUser.toObject() });
+    res.status(200).json({ username, email });
   } catch (err) {
-    console.log(err);
+    res.status(500).json({ message: "Can not create user, " + err });
+    return next();
   }
 };
 
