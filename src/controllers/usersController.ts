@@ -25,12 +25,14 @@ const login = async (req: any, res: any, next: any) => {
       return next();
     }
 
-    res.status(200).json({ username: user.username, email: user.email });
+    res
+      .status(200)
+      .json({ username: user.username, email: user.email, roll: user.roll });
   } catch (err) {}
 };
 
 const signup = async (req: any, res: any, next: any) => {
-  const { email, password, username } = req.body;
+  const { email, password, username, roll } = req.body;
 
   if (!email || !password || !username) {
     res.status(401).json({ message: "Can not create usesr, invalid inputs" });
@@ -49,9 +51,9 @@ const signup = async (req: any, res: any, next: any) => {
       return next();
     }
     const hashedPassword = await bcrypt.hash(password, 12);
-    let newUser = new User({ email, password: hashedPassword, username });
+    let newUser = new User({ email, password: hashedPassword, username, roll });
     newUser = await newUser.save();
-    res.status(200).json({ username, email });
+    res.status(200).json({ username, email, roll });
   } catch (err) {
     res.status(500).json({ message: "Can not create user, " + err });
     return next();
