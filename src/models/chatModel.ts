@@ -1,12 +1,15 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const chatSchema = new mongoose.Schema({
-  costumer: [{ id: { type: "string", unique: true }, name: String }],
-  isOpen: Boolean,
+  costumer: [
+    { id: { type: String, unique: true, default: uuidv4() }, name: String },
+  ],
+  isOpen: { type: Boolean, default: false },
   messages: Array,
-  creationTime: String,
+  creationTime: { type: Date, default: new Date().getTime() },
 });
 
-const chat = mongoose.model("chat", chatSchema);
+const Chat = mongoose.model("Chat", chatSchema);
 
-export { chat };
+export { Chat };
