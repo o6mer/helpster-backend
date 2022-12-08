@@ -60,7 +60,4 @@ const signup = async (req: any, res: any, next: any) => {
   }
 };
 
-exports.login = login;
-exports.signup = signup;
-
-export {};
+export { login, signup };
