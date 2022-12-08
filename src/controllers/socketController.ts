@@ -44,7 +44,6 @@ const onSocketConection = (socket: any, io: any) => {
       type: "text",
     };
 
-    console.log(message);
     broadcastMessage(message, id);
   }
 

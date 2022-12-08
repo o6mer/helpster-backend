@@ -4,7 +4,6 @@ export const createNewChat = async () => {
   try {
     const newChat = new Chat();
     const savedChat = await newChat.save();
-    console.log(savedChat);
     return savedChat;
   } catch (err) {
     console.log(err);
