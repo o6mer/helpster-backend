@@ -1,5 +1,6 @@
 const { User } = require("../models/userModel");
 const bcrypt = require("bcryptjs");
+const { v4: uuidv4 } = require("uuid");
 
 const login = async (req: any, res: any, next: any) => {
   const { email, password } = req.body;
@@ -51,7 +52,13 @@ const signup = async (req: any, res: any, next: any) => {
       return next();
     }
     const hashedPassword = await bcrypt.hash(password, 12);
-    let newUser = new User({ email, password: hashedPassword, username, roll });
+    let newUser = new User({
+      email,
+      password: hashedPassword,
+      username,
+      roll,
+      id: uuidv4(),
+    });
     newUser = await newUser.save();
     res.status(200).json({ username, email, roll });
   } catch (err) {

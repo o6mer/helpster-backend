@@ -1,28 +1,31 @@
 import { TChat, TMessage } from "../Types/Types";
-import { createNewChat, fetchChatData, getAllChats } from "./chatsController";
+import {
+  addMessage,
+  createNewChat,
+  deleteAllChats,
+  fetchChatData,
+  getAllChats,
+} from "./chatsController";
+const date = require("date-and-time");
 
 const onSocketConection = (socket: any, io: any) => {
   socket.on("sendMessage", onSendMessage);
   socket.on("newUserConnection", onNewUserConnection);
   socket.on("newAdminConnection", onNewAdminConnection);
   socket.on("getChatData", getChatData);
+  socket.on("deleteAllChats", onDeleteAllChats);
 
   async function getChatData(id: string, callback: (chat: TChat) => void) {
     const chatData = await fetchChatData(id);
     callback(chatData);
   }
 
-  async function onNewUserConnection() {
+  async function onNewUserConnection(callback: (chatId: string) => void) {
     const newChat = await createNewChat();
-
-    socket.emit("newChatStarted", newChat);
-
-    broadcastMessage({
-      writer: "Admin",
-      time: new Date().getDate().toString(),
-      type: "input",
-      content: "What is your name?",
-    });
+    const chatId = newChat?.id;
+    socket.join(chatId);
+    callback(chatId);
+    io.emit("newChatStarted", newChat);
   }
 
   async function onNewAdminConnection(callback: (list: Array<any>) => void) {
@@ -30,28 +33,43 @@ const onSocketConection = (socket: any, io: any) => {
     callback(allChats);
   }
 
-  function onSendMessage({
-    id,
-    messageContent,
-  }: {
-    id: string;
-    messageContent: string;
-  }) {
+  function onSendMessage(
+    {
+      id,
+      messageContent,
+      user,
+    }: {
+      id: string;
+      messageContent: string;
+      user: string;
+    },
+    callback: (message: TMessage) => void
+  ) {
     const message: TMessage = {
-      writer: id,
-      time: `${new Date().getHours()}: ${new Date().getMinutes()}`,
+      writer: user || "costumer",
+      time: date.format(new Date(), "HH:mm"),
       content: messageContent,
       type: "text",
     };
 
-    console.log(message);
-    broadcastMessage(message, id);
+    const emitMessageTo = user ? "one" : "all";
+
+    addMessage(message, id);
+    broadcastMessage(message, id, emitMessageTo);
+
+    if (!callback) return;
+    callback(message);
   }
 
-  function broadcastMessage(message: TMessage, id = "") {
-    io.emit("receiveMessage", { id, message });
-    // if (to === "") socket.emit("recieveMessage", message);
-    // else socket.to(to).emit("recieveMessage", message);
+  function broadcastMessage(message: TMessage, id = "", emitMessageTo: string) {
+    // io.emit("receiveMessage", { id, message });
+    if (emitMessageTo === "all") io.emit("receiveMessage", { id, message });
+    else io.to(id).emit("receiveMessage", { id, message });
+  }
+
+  function onDeleteAllChats() {
+    deleteAllChats();
+    io.emit("allChatsDeleted");
   }
 };
 

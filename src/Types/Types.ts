@@ -1,6 +1,6 @@
 export type TChat = {
-  _id: string;
-  costumer: { id: string; name?: string };
+  id: string;
+  costumerName: string;
   isOpen: boolean;
   messages: Array<TMessage>;
   creationTime: Date;
