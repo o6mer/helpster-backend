@@ -7,6 +7,7 @@ const chatSchema = new mongoose.Schema({
   id: { type: String, unique: true },
   costumerName: String,
   isOpen: { type: Boolean, default: false },
+  isSeen: { type: Boolean, default: false },
   messages: Array,
   creationTime: {
     type: String,

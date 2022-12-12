@@ -14,6 +14,7 @@ const onSocketConection = (socket: any, io: any) => {
   socket.on("newAdminConnection", onNewAdminConnection);
   socket.on("getChatData", getChatData);
   socket.on("deleteAllChats", onDeleteAllChats);
+  socket.on("joinChat", onJoinChat);
 
   async function getChatData(id: string, callback: (chat: TChat) => void) {
     const chatData = await fetchChatData(id);
@@ -30,7 +31,12 @@ const onSocketConection = (socket: any, io: any) => {
 
   async function onNewAdminConnection(callback: (list: Array<any>) => void) {
     const allChats = await getAllChats();
+    socket.join(allChats?.map((chat: TChat) => chat.id));
     callback(allChats);
+  }
+
+  function onJoinChat(id: string): void {
+    socket.join(id);
   }
 
   function onSendMessage(
@@ -43,7 +49,7 @@ const onSocketConection = (socket: any, io: any) => {
       messageContent: string;
       user: string;
     },
-    callback: (message: TMessage) => void
+    callback: (message: TMessage, id: string) => void
   ) {
     const message: TMessage = {
       writer: user || "costumer",
@@ -52,19 +58,15 @@ const onSocketConection = (socket: any, io: any) => {
       type: "text",
     };
 
-    const emitMessageTo = user ? "one" : "all";
-
     addMessage(message, id);
-    broadcastMessage(message, id, emitMessageTo);
+    broadcastMessage(message, id);
 
     if (!callback) return;
-    callback(message);
+    callback(message, id);
   }
 
-  function broadcastMessage(message: TMessage, id = "", emitMessageTo: string) {
-    // io.emit("receiveMessage", { id, message });
-    if (emitMessageTo === "all") io.emit("receiveMessage", { id, message });
-    else io.to(id).emit("receiveMessage", { id, message });
+  function broadcastMessage(message: TMessage, id = "") {
+    socket.to(id).emit("receiveMessage", { id, message });
   }
 
   function onDeleteAllChats() {

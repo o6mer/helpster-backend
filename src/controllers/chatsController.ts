@@ -39,6 +39,7 @@ export const getAllChats = async () => {
 export const fetchChatData = async (id: string) => {
   try {
     const chat = await Chat.findOne({ id });
+    if (!chat) return;
     chat.isOpen = true;
     await chat.save();
     return chat;
