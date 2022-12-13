@@ -2,10 +2,12 @@ import { TMessage } from "../Types/Types";
 
 const { Chat } = require("../models/chatModel");
 const { v4: uuidv4 } = require("uuid");
+const date = require("date-and-time");
 
 export const createNewChat = async () => {
   try {
-    const newChat = new Chat({ id: uuidv4() });
+    const currentTime = date.format(new Date(), "DD/MM/YYYY HH:mm:ss");
+    const newChat = new Chat({ id: uuidv4(), creationTime: currentTime });
     const savedChat = await newChat.save();
     return savedChat;
   } catch (err) {
