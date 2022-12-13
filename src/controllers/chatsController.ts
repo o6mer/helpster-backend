@@ -29,7 +29,7 @@ export const addMessage = async (message: TMessage, id: string) => {
 
 export const getAllChats = async (filter?: string) => {
   try {
-    const allChats = await Chat.find({ status: filter });
+    const allChats = await Chat.find(filter ? { status: filter } : {});
     return allChats;
   } catch (err) {
     console.log(err);
