@@ -1,7 +1,8 @@
 export type TChat = {
   id: string;
-  costumerName: string;
-  isOpen: boolean;
+  customerName: string;
+  status: string;
+  isSeen: boolean;
   messages: Array<TMessage>;
   creationTime: Date;
 };

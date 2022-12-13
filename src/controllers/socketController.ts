@@ -1,6 +1,7 @@
 import { TChat, TMessage } from "../Types/Types";
 import {
   addMessage,
+  setChatStatus,
   createNewChat,
   deleteAllChats,
   fetchChatData,
@@ -15,6 +16,8 @@ const onSocketConection = (socket: any, io: any) => {
   socket.on("getChatData", getChatData);
   socket.on("deleteAllChats", onDeleteAllChats);
   socket.on("joinChat", onJoinChat);
+  socket.on("setChatStatus", onSetChatStatus);
+  socket.on("getFilteredChatList", onGetFilteredChatList);
 
   async function getChatData(id: string, callback: (chat: TChat) => void) {
     const chatData = await fetchChatData(id);
@@ -30,7 +33,7 @@ const onSocketConection = (socket: any, io: any) => {
   }
 
   async function onNewAdminConnection(callback: (list: Array<any>) => void) {
-    const allChats = await getAllChats();
+    const allChats = await getAllChats("open");
     socket.join(allChats?.map((chat: TChat) => chat.id));
     callback(allChats);
   }
@@ -52,7 +55,7 @@ const onSocketConection = (socket: any, io: any) => {
     callback: (message: TMessage, id: string) => void
   ) {
     const message: TMessage = {
-      writer: user || "costumer",
+      writer: user || "Customer",
       time: date.format(new Date(), "HH:mm"),
       content: messageContent,
       type: "text",
@@ -65,6 +68,10 @@ const onSocketConection = (socket: any, io: any) => {
     callback(message, id);
   }
 
+  async function onSetChatStatus(status: string, chatId: string) {
+    await setChatStatus(status, chatId);
+  }
+
   function broadcastMessage(message: TMessage, id = "") {
     socket.to(id).emit("receiveMessage", { id, message });
   }
@@ -72,6 +79,14 @@ const onSocketConection = (socket: any, io: any) => {
   function onDeleteAllChats() {
     deleteAllChats();
     io.emit("allChatsDeleted");
+  }
+
+  async function onGetFilteredChatList(
+    filter: string,
+    callback: (list: Array<TChat>) => void
+  ) {
+    const list = await getAllChats(filter);
+    callback(list);
   }
 };
 

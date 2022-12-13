@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
 
 const time = new Date();
-const currentTime = `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
+const date = require("date-and-time");
+
+const currentTime = date.format(new Date(), "DD/MM/YYYY HH:mm:ss");
 
 const chatSchema = new mongoose.Schema({
   id: { type: String, unique: true },
-  costumerName: String,
-  isOpen: { type: Boolean, default: false },
+  customerName: String,
+  status: { type: String, default: "open" },
   isSeen: { type: Boolean, default: false },
   messages: Array,
   creationTime: {

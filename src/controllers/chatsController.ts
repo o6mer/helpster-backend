@@ -27,9 +27,9 @@ export const addMessage = async (message: TMessage, id: string) => {
   }
 };
 
-export const getAllChats = async () => {
+export const getAllChats = async (filter?: string) => {
   try {
-    const allChats = await Chat.find({});
+    const allChats = await Chat.find({ status: filter });
     return allChats;
   } catch (err) {
     console.log(err);
@@ -51,6 +51,17 @@ export const fetchChatData = async (id: string) => {
 export const deleteAllChats = async () => {
   try {
     await Chat.deleteMany({});
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const setChatStatus = async (status: string, chatId: string) => {
+  try {
+    const chat = await Chat.findOne({ id: chatId });
+    if (!chat) return;
+    chat.status = status;
+    await chat.save();
   } catch (err) {
     console.log(err);
   }
