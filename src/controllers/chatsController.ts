@@ -63,7 +63,7 @@ export const setChatStatus = async (status: string, chatId: string) => {
     const chat = await Chat.findOne({ id: chatId });
     if (!chat) return;
     chat.status = status;
-    await chat.save();
+    return await chat.save();
   } catch (err) {
     console.log(err);
   }

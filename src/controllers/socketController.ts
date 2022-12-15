@@ -21,6 +21,7 @@ const onSocketConection = (socket: any, io: any) => {
 
   async function getChatData(id: string, callback: (chat: TChat) => void) {
     const chatData = await fetchChatData(id);
+    socket.join(id);
     callback(chatData);
   }
 
@@ -69,7 +70,9 @@ const onSocketConection = (socket: any, io: any) => {
   }
 
   async function onSetChatStatus(status: string, chatId: string) {
-    await setChatStatus(status, chatId);
+    const chat = await setChatStatus(status, chatId);
+    socket.join(chatId);
+    io.emit("chatStatusChanged", chat);
   }
 
   function broadcastMessage(message: TMessage, id = "") {
