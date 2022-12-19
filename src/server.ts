@@ -1,5 +1,4 @@
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const usersRoutes = require("./routes/userRoutes");
 require("dotenv").config();
@@ -31,7 +30,6 @@ app.use(
     next();
   }
 );
-// turn to express.json
 app.use(express.json());
 
 io.on("connection", (socket: any) => onSocketConection(socket, io));
