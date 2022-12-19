@@ -1,8 +1,9 @@
+import { Request, Response, NextFunction } from "express";
 const { User } = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 
-const login = async (req: any, res: any, next: any) => {
+const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -32,7 +33,7 @@ const login = async (req: any, res: any, next: any) => {
   } catch (err) {}
 };
 
-const signup = async (req: any, res: any, next: any) => {
+const signup = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password, username, roll } = req.body;
 
   if (!email || !password || !username) {
@@ -46,10 +47,10 @@ const signup = async (req: any, res: any, next: any) => {
     });
 
     if (isUserExist) {
-      res
+      return res
         .status(400)
         .json({ message: "Can not create user, user already exists" });
-      return next();
+      // return next();
     }
     const hashedPassword = await bcrypt.hash(password, 12);
     let newUser = new User({

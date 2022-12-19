@@ -31,7 +31,8 @@ app.use(
     next();
   }
 );
-app.use(bodyParser.json());
+// turn to express.json
+app.use(express.json());
 
 io.on("connection", (socket: any) => onSocketConection(socket, io));
 
