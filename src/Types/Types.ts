@@ -14,3 +14,9 @@ export type TMessage = {
   content?: any;
   children?: any;
 };
+
+export type TTemplate = {
+  title?: string;
+  content?: string;
+  id?: string;
+};
