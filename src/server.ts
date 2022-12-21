@@ -1,3 +1,5 @@
+import { Request, Response, NextFunction } from "express";
+import { ClientToServerEvents, ServerToClientEvents } from "./Types/Types";
 const cors = require("cors");
 const mongoose = require("mongoose");
 const usersRoutes = require("./routes/userRoutes");
@@ -17,9 +19,9 @@ let app = express(),
 app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(
   (
-    _req: any,
+    _req: Request,
     res: { setHeader: (arg0: string, arg1: string) => void },
-    next: () => void
+    next: NextFunction
   ) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
@@ -32,10 +34,12 @@ app.use(
 );
 app.use(express.json());
 
-io.on("connection", (socket: any) => onSocketConection(socket, io));
+io.on("connection", (socket: ServerToClientEvents) =>
+  onSocketConection(socket, io)
+);
 
 const routerLand = express.Router();
-routerLand.get("/", (_req: any, _res: any, _next: any) => {});
+routerLand.get("/", (_req: Request, _res: Response, _next: NextFunction) => {});
 
 app.use("/api/user", usersRoutes);
 

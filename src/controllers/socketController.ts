@@ -1,4 +1,9 @@
-import { TChat, TMessage, TTemplate } from "../Types/Types";
+import {
+  ServerToClientEvents,
+  TChat,
+  TMessage,
+  TTemplate,
+} from "../Types/Types";
 import {
   addMessage,
   setChatStatus,
