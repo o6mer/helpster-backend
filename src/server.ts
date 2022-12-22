@@ -34,9 +34,9 @@ app.use(
 );
 app.use(express.json());
 
-io.on("connection", (socket: ServerToClientEvents) =>
-  onSocketConection(socket, io)
-);
+io.on("connection", (socket: ServerToClientEvents) => {
+  onSocketConection(socket, io);
+});
 
 const routerLand = express.Router();
 routerLand.get("/", (_req: Request, _res: Response, _next: NextFunction) => {});

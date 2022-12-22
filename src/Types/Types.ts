@@ -11,7 +11,7 @@ export type TMessage = {
   writer: string;
   time: Date | string;
   type: string;
-  content?: string;
+  content: string;
   children?: any;
 };
 
@@ -38,4 +38,11 @@ export type InterServerEvents = {
 export type SocketData = {
   name: string;
   age: number;
+};
+
+export type TConversation = {
+  id?: String;
+  question: string;
+  response: string;
+  followUp: Array<Map<string, string>>;
 };
