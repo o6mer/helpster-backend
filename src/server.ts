@@ -6,7 +6,7 @@ const usersRoutes = require("./routes/userRoutes");
 require("dotenv").config();
 const express = require("express");
 const { onSocketConection } = require("./controllers/socketController");
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 
 let app = express(),
   server = require("http").createServer(app),
