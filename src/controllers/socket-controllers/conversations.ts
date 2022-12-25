@@ -6,9 +6,8 @@ export const conversationsSocketController = (io: any, socket: any) => {
   socket.on("getResponse", onGetResponse);
 
   async function onCreateConversation(conversationData: TConversation) {
-    console.log(conversationData);
     const conversation = await createConversation(conversationData);
-    console.log(conversation);
+    return conversation;
   }
 
   async function onGetResponse(question: string) {

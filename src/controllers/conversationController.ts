@@ -1,6 +1,6 @@
 import { TConversation, TMessage } from "../Types/Types";
 const { v4: uuidv4 } = require("uuid");
-const { Conversation } = require("../models/ConversationFlow ");
+const { Conversation } = require("../models/conversationModel ");
 
 const createConversation = async ({
   question,
@@ -14,7 +14,6 @@ const createConversation = async ({
       response,
       followUp,
     });
-    console.log(conversation);
     return await conversation.save();
   } catch (err) {
     console.log(err);
