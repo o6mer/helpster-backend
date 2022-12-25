@@ -4,13 +4,7 @@ const conversationSchema = new mongoose.Schema({
   id: { type: String, unique: true },
   question: String,
   response: String,
-  followUp: {
-    type: Array,
-    of: {
-      type: Map,
-      of: String,
-    },
-  },
+  followUp: [{ input: String, response: String }],
 });
 
 const Conversation = mongoose.model("Conversation", conversationSchema);

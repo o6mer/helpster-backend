@@ -41,8 +41,11 @@ export type SocketData = {
 };
 
 export type TConversation = {
-  id?: String;
+  id: string;
   question: string;
   response: string;
-  followUp: Array<Map<string, string>>;
+  followUp: Array<{
+    input: string;
+    response: string;
+  }>;
 };
