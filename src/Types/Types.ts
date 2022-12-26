@@ -41,11 +41,11 @@ export type SocketData = {
 };
 
 export type TConversation = {
-  id: string;
+  id: String;
   question: string;
   response: string;
   followUp: Array<{
     input: string;
-    response: string;
+    conversation: String;
   }>;
 };
