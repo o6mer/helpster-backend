@@ -2,6 +2,15 @@ import { TConversation, TMessage } from "../Types/Types";
 const { v4: uuidv4 } = require("uuid");
 const { Conversation } = require("../models/conversationModel ");
 
+const getAllConversations = async () => {
+  try {
+    const conversations = await Conversation.find({});
+    return conversations;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const createConversation = async ({
   question,
   response,
@@ -51,4 +60,9 @@ const getResponse = async (question: string) => {
   }
 };
 
-export { createConversation, updateConversation, getResponse };
+export {
+  getAllConversations,
+  createConversation,
+  updateConversation,
+  getResponse,
+};
