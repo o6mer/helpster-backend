@@ -60,9 +60,18 @@ const getResponse = async (question: string) => {
   }
 };
 
+const deleteConversation = async (conversationId: string) => {
+  try {
+    await Conversation.deleteOne({ id: conversationId });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export {
   getAllConversations,
   createConversation,
   updateConversation,
   getResponse,
+  deleteConversation,
 };
