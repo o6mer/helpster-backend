@@ -11,7 +11,7 @@ export type TMessage = {
   writer: string;
   time: Date | string;
   type: string;
-  content: string;
+  content: string | Object;
   children?: any;
 };
 

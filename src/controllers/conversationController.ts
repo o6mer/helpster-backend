@@ -48,13 +48,13 @@ const updateConversation = async ({
   }
 };
 
-const getResponse = async (question: string) => {
+const getResponse = async (conversationId: string) => {
   try {
     const conversation: TConversation = await Conversation.findOne({
-      question,
+      id: conversationId || "main",
     });
 
-    return conversation.response;
+    return conversation;
   } catch (err) {
     console.log(err);
   }

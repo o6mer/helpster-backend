@@ -1,4 +1,4 @@
-import { TConversation } from "../../Types/Types";
+import { TConversation, TMessage } from "../../Types/Types";
 import {
   createConversation,
   deleteConversation,
@@ -6,6 +6,25 @@ import {
   getResponse,
   updateConversation,
 } from "../conversationController";
+const date = require("date-and-time");
+
+export const conversationToMessage = (
+  conversation: TConversation | undefined
+) => {
+  if (!conversation) return;
+  const message: TMessage = {
+    writer: "Bot",
+    time: date.format(new Date(), "HH:mm"),
+    type: "multiple",
+    content: {
+      question: conversation?.question,
+      response: conversation?.response,
+      followUp: conversation?.followUp,
+    },
+  };
+
+  return message;
+};
 
 export const conversationsSocketController = (io: any, socket: any) => {
   socket.on("getAllConversations", onGetAllConversations);
@@ -29,8 +48,17 @@ export const conversationsSocketController = (io: any, socket: any) => {
     callback(conversation);
   }
 
-  async function onGetResponse(question: string) {
-    getResponse(question);
+  async function onGetResponse({
+    conversationId,
+    chatId,
+  }: {
+    conversationId: string;
+    chatId: string;
+  }) {
+    const conversation = await getResponse(conversationId);
+    const message = conversationToMessage(conversation);
+
+    io.to(chatId).emit("receiveMessage", { message });
   }
 
   async function onDeleteConversation(conversationId: string) {

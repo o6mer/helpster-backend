@@ -1,5 +1,7 @@
-import { TChat } from "../../Types/Types";
-import { createNewChat, getAllChats } from "../chatsController";
+import { TChat, TMessage } from "../../Types/Types";
+import { addMessage, createNewChat, getAllChats } from "../chatsController";
+import { getResponse } from "../conversationController";
+import { conversationToMessage } from "./conversations";
 
 export const usersSocketController = (io: any, socket: any) => {
   socket.on("newUserConnection", onNewUserConnection);
@@ -11,6 +13,10 @@ export const usersSocketController = (io: any, socket: any) => {
     socket.join(chatId);
     callback(chatId);
     io.emit("newChatStarted", newChat);
+    const conversation = await getResponse("");
+    const message = conversationToMessage(conversation);
+
+    io.to(chatId).emit("receiveMessage", { message });
   }
 
   async function onNewAdminConnection(callback: (list: Array<any>) => void) {

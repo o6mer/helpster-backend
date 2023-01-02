@@ -44,7 +44,6 @@ export const chatsSocketController = (io: any, socket: any) => {
       content: messageContent,
       type: "text",
     };
-    console.log(message);
 
     addMessage(message, id);
     broadcastMessage(message, id);

@@ -15,7 +15,7 @@ export const createNewChat = async () => {
   }
 };
 
-export const addMessage = async (message: TMessage, id: string) => {
+export const addMessage = async (message: TMessage | undefined, id: string) => {
   try {
     const chat = await Chat.findOne({ id });
 
