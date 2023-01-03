@@ -17,6 +17,7 @@ const conversationSchema = new mongoose.Schema({
     x: Number,
     y: Number,
   },
+  isFirst: Boolean,
 });
 
 const Conversation = mongoose.model("Conversation", conversationSchema);

@@ -19,10 +19,12 @@ const createConversation = async ({
 }: TConversation) => {
   try {
     const exisitng = await Conversation.find({});
-    console.log(exisitng);
+
+    const isFirst = !exisitng.length;
 
     const conversation = new Conversation({
-      id: exisitng.length ? uuidv4() : "main",
+      id: !isFirst ? uuidv4() : "main",
+      isFirst,
       question,
       response,
       followUp,
