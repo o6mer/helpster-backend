@@ -18,8 +18,11 @@ const createConversation = async ({
   position,
 }: TConversation) => {
   try {
+    const exisitng = await Conversation.find({});
+    console.log(exisitng);
+
     const conversation = new Conversation({
-      id: uuidv4(),
+      id: exisitng.length ? uuidv4() : "main",
       question,
       response,
       followUp,

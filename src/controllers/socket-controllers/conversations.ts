@@ -1,4 +1,5 @@
 import { TConversation, TMessage } from "../../Types/Types";
+import { addMessage } from "../chatsController";
 import {
   createConversation,
   deleteConversation,
@@ -60,6 +61,7 @@ export const conversationsSocketController = (io: any, socket: any) => {
     const conversation = await getResponse(conversationId);
     const message = conversationToMessage(conversation);
 
+    addMessage(message, chatId);
     io.to(chatId).emit("receiveMessage", { message });
   }
 
