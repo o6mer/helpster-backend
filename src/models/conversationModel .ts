@@ -13,6 +13,10 @@ const conversationSchema = new mongoose.Schema({
       },
     },
   ],
+  position: {
+    x: Number,
+    y: Number,
+  },
 });
 
 const Conversation = mongoose.model("Conversation", conversationSchema);

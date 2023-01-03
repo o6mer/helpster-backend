@@ -4,6 +4,7 @@ import {
   deleteConversation,
   getAllConversations,
   getResponse,
+  saveAllConversations,
   updateConversation,
 } from "../conversationController";
 const date = require("date-and-time");
@@ -32,6 +33,7 @@ export const conversationsSocketController = (io: any, socket: any) => {
   socket.on("getResponse", onGetResponse);
   socket.on("deleteConversation", onDeleteConversation);
   socket.on("updateConversation", onUpdateConversation);
+  socket.on("saveAllConversations", onSaveAllConversations);
 
   async function onGetAllConversations(
     callback: (conversations: Array<TConversation>) => void
@@ -67,5 +69,9 @@ export const conversationsSocketController = (io: any, socket: any) => {
 
   async function onUpdateConversation(conversation: TConversation) {
     await updateConversation(conversation);
+  }
+
+  async function onSaveAllConversations(conversations: Array<TConversation>) {
+    await saveAllConversations(conversations);
   }
 };

@@ -15,6 +15,7 @@ const createConversation = async ({
   question,
   response,
   followUp,
+  position,
 }: TConversation) => {
   try {
     const conversation = new Conversation({
@@ -22,6 +23,7 @@ const createConversation = async ({
       question,
       response,
       followUp,
+      position,
     });
     return await conversation.save();
   } catch (err) {
@@ -68,10 +70,31 @@ const deleteConversation = async (conversationId: string) => {
   }
 };
 
+const saveAllConversations = async (
+  updatedConversations: Array<TConversation>
+) => {
+  try {
+    const conversations = await Conversation.find({});
+    conversations.forEach(async (conversation: any) => {
+      const find =
+        updatedConversations.find((c) => c.id === conversation.id) ||
+        conversation;
+      conversation.question = find.question;
+      conversation.response = find.response;
+      conversation.followUp = find.followUp;
+      conversation.position = find.position;
+      await conversation.save();
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export {
   getAllConversations,
   createConversation,
   updateConversation,
   getResponse,
   deleteConversation,
+  saveAllConversations,
 };

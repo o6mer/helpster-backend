@@ -48,4 +48,8 @@ export type TConversation = {
     input: string;
     conversation: String;
   }>;
+  position: {
+    x: number;
+    y: number;
+  };
 };
