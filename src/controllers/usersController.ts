@@ -96,8 +96,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
   const token = authorizationHeader.split(" ")[1];
 
   try {
-    const decodedUser = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ id: decodedUser.id });
+    const user = await checkToken(token);
 
     // If the user is not found, return a 401 status
     if (!user) {
@@ -114,4 +113,17 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { login, signup, auth };
+const checkToken = async (token: string) => {
+  try {
+    if (!token) return;
+
+    const decodedUser = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({ id: decodedUser.id });
+
+    return user;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export { login, signup, auth, checkToken };

@@ -1,6 +1,8 @@
-import { TChat, TMessage } from "../../Types/Types";
+import { TChat, TConversation, TMessage, TTemplate } from "../../Types/Types";
 import { addMessage, createNewChat, getAllChats } from "../chatsController";
-import { getResponse } from "../conversationController";
+import { getAllConversations, getResponse } from "../conversationController";
+import { getAllTemplates } from "../templatesController";
+import { checkToken } from "../usersController";
 import { conversationToMessage } from "./conversations";
 
 export const usersSocketController = (io: any, socket: any) => {
@@ -19,9 +21,23 @@ export const usersSocketController = (io: any, socket: any) => {
     io.to(chatId).emit("receiveMessage", { message });
   }
 
-  async function onNewAdminConnection(callback: (list: Array<any>) => void) {
-    const allChats = await getAllChats("open");
-    socket.join(allChats?.map((chat: TChat) => chat.id));
-    callback(allChats);
+  async function onNewAdminConnection(
+    token: string,
+    callback: (adaminData: {
+      isAuth: boolean;
+      chatList?: Array<TChat>;
+      templateList?: Array<TTemplate>;
+      covnersationList?: Array<TConversation>;
+    }) => void
+  ) {
+    const user = await checkToken(token);
+
+    if (!user) return callback({ isAuth: false });
+
+    const chatList = await getAllChats("open");
+    const templateList = await getAllTemplates();
+    const covnersationList = await getAllConversations();
+    socket.join(chatList?.map((chat: TChat) => chat.id));
+    callback({ isAuth: true, chatList, covnersationList, templateList });
   }
 };
