@@ -118,12 +118,27 @@ const checkToken = async (token: string) => {
     if (!token) return;
 
     const decodedUser = jwt.verify(token, process.env.JWT_SECRET);
+
     const user = await User.findOne({ id: decodedUser.id });
 
     return user;
+  } catch (err: any) {
+    if (err.name === "TokenExpiredError") {
+      console.log("Token expired");
+    } else {
+      console.error(err);
+    }
+  }
+};
+
+const getUsersFromIds = async (ids: Array<string | undefined>) => {
+  try {
+    const users = await User.find({ id: { $in: ids } }, "id username role");
+
+    return users;
   } catch (err) {
     console.log(err);
   }
 };
 
-export { login, signup, auth, checkToken };
+export { login, signup, auth, checkToken, getUsersFromIds };

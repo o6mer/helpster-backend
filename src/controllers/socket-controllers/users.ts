@@ -1,13 +1,22 @@
-import { TChat, TConversation, TMessage, TTemplate } from "../../Types/Types";
+import {
+  TChat,
+  TConversation,
+  TMessage,
+  TTemplate,
+  TUser,
+} from "../../Types/Types";
 import { addMessage, createNewChat, getAllChats } from "../chatsController";
 import { getAllConversations, getResponse } from "../conversationController";
 import { getAllTemplates } from "../templatesController";
-import { checkToken } from "../usersController";
+import { checkToken, getUsersFromIds } from "../usersController";
 import { conversationToMessage } from "./conversations";
+
+export let onlineAdmins: Array<string | undefined> = [];
 
 export const usersSocketController = (io: any, socket: any) => {
   socket.on("newUserConnection", onNewUserConnection);
   socket.on("newAdminConnection", onNewAdminConnection);
+  socket.on("adminDisconnect", onAdminDisconnect);
 
   async function onNewUserConnection(callback: (chatId: string) => void) {
     const newChat = await createNewChat();
@@ -28,9 +37,10 @@ export const usersSocketController = (io: any, socket: any) => {
       chatList?: Array<TChat>;
       templateList?: Array<TTemplate>;
       covnersationList?: Array<TConversation>;
+      onlineAdmins?: Array<string | undefined>;
     }) => void
   ) {
-    const user = await checkToken(token);
+    const user: TUser = await checkToken(token);
 
     if (!user) return callback({ isAuth: false });
 
@@ -38,6 +48,24 @@ export const usersSocketController = (io: any, socket: any) => {
     const templateList = await getAllTemplates();
     const covnersationList = await getAllConversations();
     socket.join(chatList?.map((chat: TChat) => chat.id));
-    callback({ isAuth: true, chatList, covnersationList, templateList });
+
+    user.status = "active";
+    onlineAdmins.push(user.id);
+
+    const admins = await getUsersFromIds(onlineAdmins);
+
+    callback({
+      isAuth: true,
+      chatList,
+      covnersationList,
+      templateList,
+      onlineAdmins: admins,
+    });
+  }
+
+  async function onAdminDisconnect(userId: string) {
+    onlineAdmins = onlineAdmins.filter((id) => id !== userId);
+    const admins = await getUsersFromIds(onlineAdmins);
+    io.emit("adminDisconnected", admins);
   }
 };

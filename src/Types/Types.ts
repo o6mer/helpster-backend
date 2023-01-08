@@ -1,3 +1,12 @@
+export type TUser = {
+  username?: string;
+  email?: string;
+  password?: string;
+  role?: string;
+  id?: string;
+  status?: string;
+};
+
 export type TChat = {
   id: string;
   customerName: string;
@@ -5,6 +14,7 @@ export type TChat = {
   isSeen: boolean;
   messages: Array<TMessage>;
   creationTime: Date;
+  assignedAdmins: Array<TUser>;
 };
 
 export type TMessage = {

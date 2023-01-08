@@ -1,5 +1,5 @@
 import { TMessage } from "../Types/Types";
-
+import { onlineAdmins } from "./socket-controllers/users";
 const { Chat } = require("../models/chatModel");
 const { v4: uuidv4 } = require("uuid");
 const date = require("date-and-time");
@@ -7,9 +7,34 @@ const date = require("date-and-time");
 export const createNewChat = async () => {
   try {
     const currentTime = date.format(new Date(), "DD/MM/YYYY HH:mm:ss");
-    const newChat = new Chat({ id: uuidv4(), creationTime: currentTime });
+    const assignedAdmin = await findAvilableAdmin();
+    const newChat = new Chat({
+      id: uuidv4(),
+      creationTime: currentTime,
+      assignedAdmin,
+    });
     const savedChat = await newChat.save();
     return savedChat;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const findAvilableAdmin = async () => {
+  try {
+    if (!onlineAdmins.length) return;
+
+    const currentAssigments = await Chat.find({}, "assignedAdmins");
+    const counter: { [k: string]: number } = {};
+    currentAssigments.forEach(
+      (chat: { _id: any; assignedAdmins: Array<string> }) => {
+        chat.assignedAdmins.forEach((id: string) => {
+          if (!counter[id]) return (counter[id] = 1);
+          counter[id]++;
+        });
+      }
+    );
+    const min = Math.min(...Object.values(counter));
   } catch (err) {
     console.log(err);
   }
