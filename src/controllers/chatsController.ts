@@ -1,3 +1,4 @@
+import { User } from "../models/userModel";
 import { TMessage } from "../Types/Types";
 import { onlineAdmins } from "./socket-controllers/users";
 const { Chat } = require("../models/chatModel");
@@ -24,17 +25,45 @@ export const findAvilableAdmin = async () => {
   try {
     if (!onlineAdmins.length) return;
 
-    const currentAssigments = await Chat.find({}, "assignedAdmins");
+    const currentAssigments = await Chat.find({}, "assignedAdmin");
+    console.log(currentAssigments);
     const counter: { [k: string]: number } = {};
-    currentAssigments.forEach(
-      (chat: { _id: any; assignedAdmins: Array<string> }) => {
-        chat.assignedAdmins.forEach((id: string) => {
-          if (!counter[id]) return (counter[id] = 1);
-          counter[id]++;
-        });
+    currentAssigments.forEach((chat: { _id: any; assignedAdmin: string }) => {
+      if (!counter[chat.assignedAdmin])
+        return (counter[chat.assignedAdmin] = 1);
+      counter[chat.assignedAdmin]++;
+    });
+
+    console.log(counter);
+
+    if (Object.keys(counter.length === 0)) {
+      const { username } = await User.findOne(
+        { username: onlineAdmins[0] },
+        "username"
+      );
+
+      return username;
+    }
+
+    const enteries = Object.entries(counter);
+    const loweset = {
+      sum: enteries[0][1],
+      username: "",
+    };
+
+    enteries.forEach((array: Array<any>) => {
+      if (array[1] <= loweset.sum) {
+        loweset.sum = array[1];
+        loweset.username = array[0];
       }
+    });
+
+    const { username } = await User.findOne(
+      { username: onlineAdmins[0] },
+      "username"
     );
-    const min = Math.min(...Object.values(counter));
+
+    return username;
   } catch (err) {
     console.log(err);
   }

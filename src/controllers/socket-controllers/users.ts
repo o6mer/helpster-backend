@@ -50,7 +50,7 @@ export const usersSocketController = (io: any, socket: any) => {
     socket.join(chatList?.map((chat: TChat) => chat.id));
 
     user.status = "active";
-    onlineAdmins.push(user.id);
+    onlineAdmins.push(user.username);
 
     const admins = await getUsersFromIds(onlineAdmins);
 

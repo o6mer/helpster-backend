@@ -14,7 +14,7 @@ export type TChat = {
   isSeen: boolean;
   messages: Array<TMessage>;
   creationTime: Date;
-  assignedAdmins: Array<TUser>;
+  assignedAdmin: string;
 };
 
 export type TMessage = {
