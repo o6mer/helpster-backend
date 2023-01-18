@@ -104,9 +104,9 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // If the user is found, return the user data
-    const { id, username, role } = user;
+    const { id, username, role, email } = user;
 
-    res.status(200).json({ id, username, role });
+    res.status(200).json({ id, username, role, email });
   } catch (error) {
     // If the token is invalid, return a 401 status
     return res.status(401).send({ message: "Unauthorized" });
