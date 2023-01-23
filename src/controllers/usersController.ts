@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { TUser } from "../Types/Types";
 const { User } = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
@@ -131,6 +132,38 @@ const checkToken = async (token: string) => {
   }
 };
 
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { id, username, email, role, password } = req.body;
+
+  if (!id || !username || !email || !role) {
+    res.status(400).json({ message: "Invalid request" });
+    return next();
+  }
+
+  try {
+    const user = await User.findOne({ id });
+
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return next();
+    }
+
+    user.username = username;
+    user.email = email;
+    user.role = role;
+    // user.password = password;
+
+    await user.save();
+
+    const token = jwt.sign({ id, username, role }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.status(200).json({ token });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const getUsersFromIds = async (ids: Array<string | undefined>) => {
   try {
     const users = await User.find({ id: { $in: ids } }, "id username role");
@@ -141,4 +174,4 @@ const getUsersFromIds = async (ids: Array<string | undefined>) => {
   }
 };
 
-export { login, signup, auth, checkToken, getUsersFromIds };
+export { login, signup, auth, checkToken, getUsersFromIds, updateUser };
