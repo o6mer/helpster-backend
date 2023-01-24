@@ -62,7 +62,7 @@ export const conversationsSocketController = (io: any, socket: any) => {
     const message = conversationToMessage(conversation);
 
     addMessage(message, chatId);
-    io.to(chatId).emit("receiveMessage", { message });
+    io.to(chatId).emit("receiveMessage", { message, id: chatId });
   }
 
   async function onDeleteConversation(conversationId: string) {

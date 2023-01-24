@@ -11,7 +11,7 @@ import { getAllTemplates } from "../templatesController";
 import { checkToken, getUsersFromIds } from "../usersController";
 import { conversationToMessage } from "./conversations";
 
-export let onlineAdmins: Array<string | undefined> = [];
+export let onlineAdmins: Array<string> = [];
 
 export const usersSocketController = (io: any, socket: any) => {
   socket.on("newUserConnection", onNewUserConnection);

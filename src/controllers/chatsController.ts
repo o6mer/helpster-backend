@@ -25,18 +25,21 @@ export const findAvilableAdmin = async () => {
   try {
     if (!onlineAdmins.length) return;
 
-    const currentAssigments = await Chat.find({}, "assignedAdmin");
-    console.log(currentAssigments);
+    const currentAssigments: Array<any> = await Chat.find(
+      { status: "open" },
+      "assignedAdmin"
+    );
+
     const counter: { [k: string]: number } = {};
-    currentAssigments.forEach((chat: { _id: any; assignedAdmin: string }) => {
-      if (!counter[chat.assignedAdmin])
-        return (counter[chat.assignedAdmin] = 1);
-      counter[chat.assignedAdmin]++;
+
+    onlineAdmins.forEach((admin) => {
+      counter[admin] = 0;
+      currentAssigments.forEach(({ assignedAdmin }) => {
+        if (assignedAdmin === admin) counter[assignedAdmin]++;
+      });
     });
 
-    console.log(counter);
-
-    if (Object.keys(counter.length === 0)) {
+    if (Object.keys(counter).length === 0) {
       const { username } = await User.findOne(
         { username: onlineAdmins[0] },
         "username"
@@ -46,20 +49,20 @@ export const findAvilableAdmin = async () => {
     }
 
     const enteries = Object.entries(counter);
-    const loweset = {
+    const lowest = {
       sum: enteries[0][1],
       username: "",
     };
 
     enteries.forEach((array: Array<any>) => {
-      if (array[1] <= loweset.sum) {
-        loweset.sum = array[1];
-        loweset.username = array[0];
+      if (array[1] <= lowest.sum) {
+        lowest.sum = array[1];
+        lowest.username = array[0];
       }
     });
 
     const { username } = await User.findOne(
-      { username: onlineAdmins[0] },
+      { username: lowest.username },
       "username"
     );
 
