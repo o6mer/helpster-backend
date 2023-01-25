@@ -27,6 +27,7 @@ export const usersSocketController = (io: any, socket: any) => {
     const conversation = await getResponse("");
     const message = conversationToMessage(conversation);
 
+    addMessage(message, chatId);
     io.to(chatId).emit("receiveMessage", { message });
   }
 
