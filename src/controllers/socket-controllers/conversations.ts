@@ -73,7 +73,11 @@ export const conversationsSocketController = (io: any, socket: any) => {
     await updateConversation(conversation);
   }
 
-  async function onSaveAllConversations(conversations: Array<TConversation>) {
+  async function onSaveAllConversations(
+    conversations: Array<TConversation>,
+    callback: () => void
+  ) {
     await saveAllConversations(conversations);
+    callback();
   }
 };
