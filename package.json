@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/o6mer/chat-bot-backend#readme",
   "devDependencies": {
-    "@thream/socketio-jwt": "^3.0.1",
     "@types/node": "^18.11.10",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
