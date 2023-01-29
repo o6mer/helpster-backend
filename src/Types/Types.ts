@@ -1,3 +1,12 @@
+export type TUser = {
+  username: string;
+  email?: string;
+  password?: string;
+  role?: string;
+  id?: string;
+  status?: string;
+};
+
 export type TChat = {
   id: string;
   customerName: string;
@@ -5,13 +14,14 @@ export type TChat = {
   isSeen: boolean;
   messages: Array<TMessage>;
   creationTime: Date;
+  assignedAdmin: string;
 };
 
 export type TMessage = {
   writer: string;
   time: Date | string;
   type: string;
-  content?: string;
+  content: string | Object;
   children?: any;
 };
 
@@ -38,4 +48,18 @@ export type InterServerEvents = {
 export type SocketData = {
   name: string;
   age: number;
+};
+
+export type TConversation = {
+  id: String;
+  question: string;
+  response: string;
+  followUp: Array<{
+    input: string;
+    conversation: String;
+  }>;
+  position: {
+    x: number;
+    y: number;
+  };
 };

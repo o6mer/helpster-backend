@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from "express";
+import { TUser } from "../Types/Types";
 const { User } = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
@@ -27,14 +30,21 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       return next();
     }
 
-    res
-      .status(200)
-      .json({ username: user.username, email: user.email, roll: user.roll });
-  } catch (err) {}
+    const { id, username, role } = user;
+
+    const token = jwt.sign({ id, username, role }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ id, username, role, token });
+  } catch (err) {
+    res.status(500).json({ message: "Can not create user, " + err });
+    return next();
+  }
 };
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password, username, roll } = req.body;
+  const { email, password, username, role } = req.body;
 
   if (!email || !password || !username) {
     res.status(401).json({ message: "Can not create usesr, invalid inputs" });
@@ -57,15 +67,111 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
       email,
       password: hashedPassword,
       username,
-      roll,
+      role,
       id: uuidv4(),
     });
     newUser = await newUser.save();
-    res.status(200).json({ username, email, roll });
+
+    const token = jwt.sign(
+      { id: newUser.id, username: newUser.username, role: newUser.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    res.status(200).json({ token });
   } catch (err) {
     res.status(500).json({ message: "Can not create user, " + err });
     return next();
   }
 };
 
-export { login, signup };
+const auth = async (req: Request, res: Response, next: NextFunction) => {
+  const authorizationHeader = req.headers.authorization;
+
+  if (!authorizationHeader) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+
+  const token = authorizationHeader.split(" ")[1];
+
+  try {
+    const user = await checkToken(token);
+
+    // If the user is not found, return a 401 status
+    if (!user) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
+
+    // If the user is found, return the user data
+    const { id, username, role, email } = user;
+
+    res.status(200).json({ id, username, role, email });
+  } catch (error) {
+    // If the token is invalid, return a 401 status
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+};
+
+const checkToken = async (token: string) => {
+  try {
+    if (!token) return;
+
+    const decodedUser = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ id: decodedUser.id });
+
+    return user;
+  } catch (err: any) {
+    if (err.name === "TokenExpiredError") {
+      console.log("Token expired");
+    } else {
+      console.error(err);
+    }
+  }
+};
+
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { id, username, email, role, password } = req.body;
+
+  if (!id || !username || !email || !role) {
+    res.status(400).json({ message: "Invalid request" });
+    return next();
+  }
+
+  try {
+    const user = await User.findOne({ id });
+
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return next();
+    }
+
+    user.username = username;
+    user.email = email;
+    user.role = role;
+    // user.password = password;
+
+    await user.save();
+
+    const token = jwt.sign({ id, username, role }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.status(200).json({ token });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getUsersFromIds = async (ids: Array<string | undefined>) => {
+  try {
+    const users = await User.find({ id: { $in: ids } }, "id username role");
+
+    return users;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export { login, signup, auth, checkToken, getUsersFromIds, updateUser };

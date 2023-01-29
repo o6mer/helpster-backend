@@ -9,6 +9,7 @@ const chatSchema = new mongoose.Schema({
   creationTime: {
     type: String,
   },
+  assignedAdmin: String,
 });
 
 const Chat = mongoose.model("Chat", chatSchema);
