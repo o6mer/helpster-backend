@@ -48,6 +48,7 @@ mongoose
   .then(() => {
     server.listen(port, () => {
       console.log(`listening on port ${port}`);
+      console.log(process.env.FRONTEND_URL);
     });
   })
   .catch((err: any) => {
