@@ -32,5 +32,5 @@ in root directory run:
 1. clone the repo.
 2. `npm i` install dependencies
 3. `npm run dev` lunch localy hosted client 
-4. clone the repo https://github.com/o6mer/helpster-backend;
+4. clone the repo https://github.com/o6mer/helpster-frontend
 5. `run steps 1 and 2` in the backend repo
