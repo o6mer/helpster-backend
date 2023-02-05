@@ -28,7 +28,6 @@ Helpster is a platform for companies to easily monitor its customers' questions 
 ## Setup
 You can access the live version through the link above.
 if you want to run it localy:
-in root directory run:
 1. clone the repo.
 2. `npm i` install dependencies
 3. `npm run dev` lunch localy hosted client 
